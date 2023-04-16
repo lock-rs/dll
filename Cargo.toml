@@ -32,7 +32,6 @@ simplelog = "0.11.0"
 widestring = "1.0.1"
 nalgebra = "0.32.2"
 faithe = "0.8.0"
-xorstring = "0.1.0"
 
 windows = { version = "0.44.0", features = [
     "Win32_UI_WindowsAndMessaging",
@@ -43,7 +42,8 @@ windows = { version = "0.44.0", features = [
     "Win32_System_Diagnostics_Debug",
     "Win32_Foundation",
     "Win32_System_Kernel",
-    "Win32_System_LibraryLoader"
+    "Win32_System_Threading",
+    "Win32_System_LibraryLoader",
 ] }
 
 image = { version = "0.24", features = ["jpeg"] }
@@ -54,6 +54,7 @@ crossterm = "0.26.1"
 egui-toast = "0.3.0"
 lazy_static = "1.4.0"
 backtrace = "0.3.67"
+xorstring = { git = "https://github.com/Proximyst/xorstring" }
 
 [dependencies.egui_extras]
 version = "0.21"

@@ -2981,9 +2981,8 @@ checksum = "d2d7d3948613f75c98fd9328cfdcc45acc4d360655289d0a7d4ec931392200a3"
 
 [[package]]
 name = "xorstring"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03fd47a8ee974ad1ea70ed7fddc0ae4179bbca1cafa93ebc818ae9b473931030"
+version = "0.2.0"
+source = "git+https://github.com/Proximyst/xorstring#d979c601bb3be708ea3b0aa89ab34830cda8ba34"
 dependencies = [
  "xorstring-procmacro",
 ]
@@ -2991,8 +2990,7 @@ dependencies = [
 [[package]]
 name = "xorstring-procmacro"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "384aaab5768237454c9f935a681dc629dc3be59a4380aca94c9cf780ab81877e"
+source = "git+https://github.com/Proximyst/xorstring#d979c601bb3be708ea3b0aa89ab34830cda8ba34"
 dependencies = [
  "lazy_static",
  "proc-macro2 0.4.30",

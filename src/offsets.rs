@@ -326,6 +326,29 @@ impl Offsets {
         children
     }
 
+    //== Get Children ==//
+    pub unsafe fn get_every_other_player(&mut self, instance: usize) -> Vec<usize> {
+
+        let mut children = Vec::new();
+
+        if instance == 0 as usize {return children;}
+
+        let start  = *crate::cast!(instance + self.children_start, usize);
+        let end = *crate::cast!(start + self.children_end, usize);
+
+        let mut child = *crate::cast!(start, usize) + 0x8; 
+        // Loop through children
+        while child < end { 
+            if !(self.get_name(*crate::cast!(child, usize)).chars().count() == 0) {
+                children.push(*crate::cast!(child, usize)); 
+            }
+
+            child += 0x8; 
+        } 
+        
+        children
+    }
+
     //== Roblox Print ==//
     pub unsafe fn roblox_print(&mut self, text: &str) {
         let var = text.replace(|c: char| !c.is_ascii(), "");

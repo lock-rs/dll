@@ -935,7 +935,7 @@ impl Lock {
         }
 
         unsafe {
-            for player in offsets.get_children(ADDRESSES.players) {
+            for player in offsets.get_every_other_player(ADDRESSES.players) {
                 if player == 0 {
                     continue;
                 }
@@ -1002,14 +1002,14 @@ impl Lock {
                             // TOP
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(1.0, tracer_color)
+                                egui::Stroke::new(1.5, tracer_color)
                             );
                         }
                         1 => {
                             // Middle
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center()],
-                                egui::Stroke::new(1.0, tracer_color)
+                                egui::Stroke::new(1.5, tracer_color)
                             );
                         }
                         2 => {
@@ -1020,21 +1020,21 @@ impl Lock {
                                     ctx.available_rect().center_bottom() -
                                         Vec2::new(0.0, ctx.available_rect().height() / 5.0),
                                 ],
-                                egui::Stroke::new(1.0, tracer_color)
+                                egui::Stroke::new(1.5, tracer_color)
                             );
                         }
                         3 => {
                             // Bottom
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_bottom()],
-                                egui::Stroke::new(1.0, tracer_color)
+                                egui::Stroke::new(1.5, tracer_color)
                             );
                         }
                         4 => {
                             if pointer_pos.is_some() {
                                 ctx.debug_painter().line_segment(
                                     [rect.center_bottom(), pointer_pos.unwrap()],
-                                    egui::Stroke::new(1.0, tracer_color)
+                                    egui::Stroke::new(1.5, tracer_color)
                                 );
                             }
                         }
@@ -1043,7 +1043,7 @@ impl Lock {
                             // Overflow
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(1.0, tracer_color)
+                                egui::Stroke::new(1.5, tracer_color)
                             );
                         }
                     }
@@ -1082,10 +1082,10 @@ impl Lock {
 
                         if self.window_theme {
                             let mut lightmode = egui::Visuals::light();
-                            lightmode.window_shadow = egui::epaint::Shadow {
+/*                             lightmode.window_shadow = egui::epaint::Shadow {
                                 extrusion: 0.0,
                                 color: Color32::from_rgb(0, 0, 0),
-                            };
+                            }; */
                             ctx.set_visuals(lightmode);
 
                             if
@@ -1098,10 +1098,10 @@ impl Lock {
                             }
                         } else {
                             let mut darkmode = egui::Visuals::dark();
-                            darkmode.window_shadow = egui::epaint::Shadow {
+/*                             darkmode.window_shadow = egui::epaint::Shadow {
                                 extrusion: 0.0,
                                 color: Color32::from_rgb(0, 0, 0),
-                            };
+                            }; */
                             ctx.set_visuals(darkmode);
 
                             if

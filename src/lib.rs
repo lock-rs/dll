@@ -40,15 +40,29 @@ pub struct Addresses {
   localplayer: usize,
 }
 
+
 pub static mut ADDRESSES: Addresses = Addresses {datamodel:0,players:0,localplayer:0};
+
+use xorstring;
+use xorstring::xorstring_procmacro;
+
+macro_rules! xorstr {
+  ($str_lit:literal) => {
+    $crate::XorString::new(xorstring_procmacro::xorstring!($str_lit).0).decrypt()
+  };
+  ($str_var:expr) => {
+    $crate::XorString::new(xorstring_procmacro::xorstring!($str_var).0).decrypt()
+  };
+}
 
 mod gay;
 mod bruteforce;
 mod ui;
 
+
 fn main(_hinst: usize) {
    unsafe { errorhandling::init_errorhandler(); }
-  println!("Cool?55");
+  // println!("{}",xorstr!("Cool?55"));
 
   env::set_var("RUST_BACKTRACE", "full");
   unsafe { winapi::um::consoleapi::AllocConsole();  }
@@ -108,8 +122,7 @@ fn main(_hinst: usize) {
 /*       bruteforce::GetCharacterOffset();
       bruteforce::GetLocalPlayerOffset();
       bruteforce::GetUserIDOffset(); */
-        bruteforce::GetPlaceIDOffset(); 
-       // bruteforce::GetTeamIndexOffset();
+        // bruteforce::GetPlaceIDOffset(); 
        gay::main_thread(_hinst);
 
     }
