@@ -960,12 +960,13 @@ impl Lock {
 
                 let cool = offsets.world2screen(pos);
 
-
+                let cooo2 = egui::Pos2::new(cool.x, cool.y);
 
                 let rect = egui::Rect::from_two_pos(
-                    egui::Pos2::new(cool.x, cool.y),
-                    egui::Pos2::new(cool.x, cool.y)
+                    cooo2,
+                    cooo2
                 );
+
                 let mut distance = *self.u32_map
                     .entry("temp_debug_slider2".to_owned())
                     .or_insert(69 as u32);
@@ -1000,7 +1001,11 @@ impl Lock {
 
                         tracer_clr = [red as u8, green as u8, 0, 255];
                     }
-
+                    let tracer_color = Color32::from_rgba_premultiplied(tracer_clr[0],
+                        tracer_clr[1],
+                        tracer_clr[2],
+                        tracer_clr[3]
+                    );
                     match
                         *self.usize_map.entry("esp_tracers_type".to_owned()).or_insert(0 as usize)
                     {

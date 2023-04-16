@@ -255,22 +255,13 @@ impl Offsets {
     }
 
     pub unsafe fn get_character(&mut self, instance: usize) -> usize {
-        let ply = String::from("Player");
-        match self.get_classname(instance) {
-            ply => return *crate::cast!(instance + self.character, usize),
-            _ => return 0,
-        }
+        return *crate::cast!(instance + self.character, usize);
     }
 
     pub unsafe fn get_localplayer(&mut self, instance: usize) -> usize {
-        let plys = String::from("Players");
-
-        match self.get_classname(instance) {
-            plys => return *crate::cast!(instance + self.character, usize),
-            _ => return 0,
-        }
+        *crate::cast!(instance + self.character, usize)
     }
-
+    
     //== Get Name ==//
     pub unsafe fn get_name(&mut self, instance: usize) -> String {
         let name_location = instance + self.name_addon;

@@ -1,5 +1,5 @@
 [package]
-name = "lock.rs"
+name = "lockrs"
 version = "0.1.0"
 edition = "2021"
 
@@ -56,7 +56,7 @@ features = ["image"]
 
 [dependencies.egui-d3d11]
 git = "https://github.com/Alleexxi/egui-d3d11"
-features = ["force-compile", "save-blob", "parking-lot"]
+features = ["save-blob", "parking-lot"]
 
 [build]
 target = "nightly-i686-pc-windows-msvc"

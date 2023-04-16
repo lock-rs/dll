@@ -204,45 +204,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "cheat"
-version = "0.1.0"
-dependencies = [
- "autopilot",
- "byte-strings",
- "chiter",
- "clap",
- "console",
- "crossterm",
- "cxx",
- "dialoguer",
- "egui 0.21.0",
- "egui-d3d11",
- "egui-toast",
- "egui_extras",
- "faithe",
- "image 0.24.3",
- "lazy_static",
- "libc",
- "log",
- "nalgebra",
- "once_cell",
- "parking_lot 0.11.2",
- "retour",
- "rlua",
- "shroud",
- "simplelog",
- "toy-arms",
- "toy-arms_derive",
- "widestring",
- "winapi",
- "winconsole",
- "windows 0.44.0",
- "winit",
- "winreg",
- "xorstring",
-]
-
-[[package]]
 name = "chiter"
 version = "0.4.0"
 source = "git+https://github.com/boatboatboatboat/chiter#b96b595f10dd60353d0df02f6c9407172b829fe0"
@@ -1254,6 +1215,45 @@ checksum = "327fa5b6a6940e4699ec49a9beae1ea4845c6bab9314e4f84ac68742139d8c53"
 dependencies = [
  "autocfg",
  "scopeguard",
+]
+
+[[package]]
+name = "lockrs"
+version = "0.1.0"
+dependencies = [
+ "autopilot",
+ "byte-strings",
+ "chiter",
+ "clap",
+ "console",
+ "crossterm",
+ "cxx",
+ "dialoguer",
+ "egui 0.21.0",
+ "egui-d3d11",
+ "egui-toast",
+ "egui_extras",
+ "faithe",
+ "image 0.24.3",
+ "lazy_static",
+ "libc",
+ "log",
+ "nalgebra",
+ "once_cell",
+ "parking_lot 0.11.2",
+ "retour",
+ "rlua",
+ "shroud",
+ "simplelog",
+ "toy-arms",
+ "toy-arms_derive",
+ "widestring",
+ "winapi",
+ "winconsole",
+ "windows 0.44.0",
+ "winit",
+ "winreg",
+ "xorstring",
 ]
 
 [[package]]
