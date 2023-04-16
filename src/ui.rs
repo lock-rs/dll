@@ -894,6 +894,12 @@ impl Lock {
                         *self.f32_map.entry("aimbot_yoffset".to_owned()).or_insert(0.0 as f32)
                 );
 
+                let fov_color = Color32::from_rgba_unmultiplied(
+                    fov_clr[0],
+                    fov_clr[1],
+                    fov_clr[2],
+                    fov_clr[3]
+                );
                 if
                     *self.bool_map.entry("fov_circle_filled".to_owned()).or_insert(false as bool) ==
                     true
@@ -903,22 +909,12 @@ impl Lock {
                         *self.u32_map
                             .entry("aimbot_fov_value".to_owned())
                             .or_insert(100 as u32) as f32,
-                        Color32::from_rgba_unmultiplied(
-                            fov_clr[0],
-                            fov_clr[1],
-                            fov_clr[2],
-                            fov_clr[3]
-                        ),
+                            fov_color,
                         egui::Stroke::new(
                             *self.f32_map
                                 .entry("fov_circle_thickness".to_owned())
                                 .or_insert(1.0 as f32),
-                            Color32::from_rgba_unmultiplied(
-                                fov_clr[0],
-                                fov_clr[1],
-                                fov_clr[2],
-                                fov_clr[3]
-                            )
+                                fov_color
                         )
                     );
                 } else {
@@ -931,12 +927,7 @@ impl Lock {
                             *self.f32_map
                                 .entry("fov_circle_thickness".to_owned())
                                 .or_insert(1.5 as f32),
-                            Color32::from_rgba_unmultiplied(
-                                fov_clr[0],
-                                fov_clr[1],
-                                fov_clr[2],
-                                fov_clr[3]
-                            )
+                                fov_color
                         )
                     );
                 }
@@ -962,10 +953,7 @@ impl Lock {
 
                 let cooo2 = egui::Pos2::new(cool.x, cool.y);
 
-                let rect = egui::Rect::from_two_pos(
-                    cooo2,
-                    cooo2
-                );
+                let rect = egui::Rect::from_two_pos(cooo2, cooo2);
 
                 let mut distance = *self.u32_map
                     .entry("temp_debug_slider2".to_owned())
@@ -1001,7 +989,8 @@ impl Lock {
 
                         tracer_clr = [red as u8, green as u8, 0, 255];
                     }
-                    let tracer_color = Color32::from_rgba_premultiplied(tracer_clr[0],
+                    let tracer_color = Color32::from_rgba_premultiplied(
+                        tracer_clr[0],
                         tracer_clr[1],
                         tracer_clr[2],
                         tracer_clr[3]
@@ -1013,30 +1002,14 @@ impl Lock {
                             // TOP
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(
-                                    1.0,
-                                    Color32::from_rgba_unmultiplied(
-                                        tracer_clr[0],
-                                        tracer_clr[1],
-                                        tracer_clr[2],
-                                        tracer_clr[3]
-                                    )
-                                )
+                                egui::Stroke::new(1.0, tracer_color)
                             );
                         }
                         1 => {
                             // Middle
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center()],
-                                egui::Stroke::new(
-                                    1.0,
-                                    Color32::from_rgba_unmultiplied(
-                                        tracer_clr[0],
-                                        tracer_clr[1],
-                                        tracer_clr[2],
-                                        tracer_clr[3]
-                                    )
-                                )
+                                egui::Stroke::new(1.0, tracer_color)
                             );
                         }
                         2 => {
@@ -1047,45 +1020,21 @@ impl Lock {
                                     ctx.available_rect().center_bottom() -
                                         Vec2::new(0.0, ctx.available_rect().height() / 5.0),
                                 ],
-                                egui::Stroke::new(
-                                    1.0,
-                                    Color32::from_rgba_unmultiplied(
-                                        tracer_clr[0],
-                                        tracer_clr[1],
-                                        tracer_clr[2],
-                                        tracer_clr[3]
-                                    )
-                                )
+                                egui::Stroke::new(1.0, tracer_color)
                             );
                         }
                         3 => {
                             // Bottom
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_bottom()],
-                                egui::Stroke::new(
-                                    1.0,
-                                    Color32::from_rgba_unmultiplied(
-                                        tracer_clr[0],
-                                        tracer_clr[1],
-                                        tracer_clr[2],
-                                        tracer_clr[3]
-                                    )
-                                )
+                                egui::Stroke::new(1.0, tracer_color)
                             );
                         }
                         4 => {
                             if pointer_pos.is_some() {
                                 ctx.debug_painter().line_segment(
                                     [rect.center_bottom(), pointer_pos.unwrap()],
-                                    egui::Stroke::new(
-                                        1.0,
-                                        Color32::from_rgba_unmultiplied(
-                                            tracer_clr[0],
-                                            tracer_clr[1],
-                                            tracer_clr[2],
-                                            tracer_clr[3]
-                                        )
-                                    )
+                                    egui::Stroke::new(1.0, tracer_color)
                                 );
                             }
                         }
@@ -1094,15 +1043,7 @@ impl Lock {
                             // Overflow
                             ctx.debug_painter().line_segment(
                                 [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(
-                                    1.0,
-                                    Color32::from_rgba_unmultiplied(
-                                        tracer_clr[0],
-                                        tracer_clr[1],
-                                        tracer_clr[2],
-                                        tracer_clr[3]
-                                    )
-                                )
+                                egui::Stroke::new(1.0, tracer_color)
                             );
                         }
                     }

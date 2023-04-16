@@ -24,7 +24,7 @@ use offsets::Offsets;
 
 use offsets::Vector2;
 use offsets::Vector3;
-
+mod errorhandling;
 /* unsafe fn setfpslimit(limit: i32) {
   let fps = cast!(mut gettask() + 0x118,f64);
   *fps = 1f64 / limit as f64;
@@ -47,6 +47,8 @@ mod bruteforce;
 mod ui;
 
 fn main(_hinst: usize) {
+   unsafe { errorhandling::init_errorhandler(); }
+  println!("Cool?55");
 
   env::set_var("RUST_BACKTRACE", "full");
   unsafe { winapi::um::consoleapi::AllocConsole();  }
@@ -106,7 +108,7 @@ fn main(_hinst: usize) {
 /*       bruteforce::GetCharacterOffset();
       bruteforce::GetLocalPlayerOffset();
       bruteforce::GetUserIDOffset(); */
-/*       bruteforce::GetPlaceIDOffset(); */
+        bruteforce::GetPlaceIDOffset(); 
        // bruteforce::GetTeamIndexOffset();
        gay::main_thread(_hinst);
 
