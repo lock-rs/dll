@@ -242,19 +242,19 @@ static mut FRAME: i32 = 0;
                 });
 
 
-                let datamodel = offsets.get_datamodel();
-                let players = offsets.find_first_child(datamodel, "Players");
+                let datamodel = OFFSETS.get_datamodel();
+                let players = OFFSETS.find_first_child(datamodel, "Players");
 
-                for player in offsets.get_children(players) {
+                for player in OFFSETS.get_children(players) {
                     if (player == 0) {continue};
-                    let character = offsets.get_character(player);
+                    let character = OFFSETS.get_character(player);
                     if (character == 0) {continue};
-                    let head = offsets.find_first_child(character, "Head");
+                    let head = OFFSETS.find_first_child(character, "Head");
                     if (head == 0) {continue};
-                    let pos = offsets.get_position(head);
+                    let pos = OFFSETS.get_position(head);
 
 
-                    let cool = offsets.world2screen(pos);
+                    let cool = OFFSETS.world2screen(pos);
 
         /*             ctx.debug_painter().circle(
                         Pos2::new(cool.x, cool.y),
@@ -263,7 +263,7 @@ static mut FRAME: i32 = 0;
                         Stroke::none(),
                     ); */
 
-                    let middl = offsets.getscreendim();
+                    let middl = OFFSETS.getscreendim();
                     // Make a line to the world 2 screen position
         /*             let input = ctx.input(|input| input.pointer.clone());
                     // Pos2::new(middl.x / 2.0, middl.y / 2.0)
@@ -1233,21 +1233,23 @@ static mut FRAME: i32 = 0;
     }
 } */
 
-pub unsafe fn main_thread(_hinst: usize) {
-    eprintln!("Hello World!");
+pub fn main_thread(_hinst: usize) {
+    unsafe {
+        eprintln!("Hello World!");
 
-    let methods = directx11::methods().unwrap();
+        let methods = directx11::methods().unwrap();
 
-    let present = methods.swapchain_vmt()[8];
-    eprintln!("Present: {:X}", present as usize);
+        let present = methods.swapchain_vmt()[8];
+        eprintln!("Present: {:X}", present as usize);
 
-    let swap_buffers = methods.swapchain_vmt()[13];
-    eprintln!("Buffers: {:X}", swap_buffers as usize);
+        let swap_buffers = methods.swapchain_vmt()[13];
+        eprintln!("Buffers: {:X}", swap_buffers as usize);
 
-    let present: FnPresent = std::mem::transmute(methods.swapchain_vmt()[8]);
-    let swap_buffers: FnResizeBuffers = std::mem::transmute(methods.swapchain_vmt()[13]);
+        let present: FnPresent = std::mem::transmute(methods.swapchain_vmt()[8]);
+        let swap_buffers: FnResizeBuffers = std::mem::transmute(methods.swapchain_vmt()[13]);
 
-    PresentHook.initialize(present, hk_present).unwrap().enable().unwrap();
+        PresentHook.initialize(present, hk_present).unwrap().enable().unwrap();
 
-    ResizeBufferHook.initialize(swap_buffers, hk_resize_buffers).unwrap().enable().unwrap();
+        ResizeBufferHook.initialize(swap_buffers, hk_resize_buffers).unwrap().enable().unwrap();
+    }
 }

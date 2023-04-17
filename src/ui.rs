@@ -1,24 +1,8 @@
 use egui::{
-    Align2,
     Color32,
     Context,
-    FontData,
-    FontDefinitions,
-    FontFamily,
-    FontId,
-    FontTweak,
-    Key,
-    Modifiers,
     Pos2,
-    Rect,
-    RichText,
-    ScrollArea,
-    Slider,
-    Stroke,
-    TextureId,
-    TextureOptions,
     Vec2,
-    Widget,
     Ui,
 };
 
@@ -28,18 +12,10 @@ extern crate crossterm;
 extern crate winconsole;
 
 //== Use ==//
-use std::io;
-use std::path::Path;
-use winreg::enums::*;
-use winreg::RegKey;
 use std::collections::HashMap;
-use core::time::Duration;
-use std::{ thread, time, sync::mpsc };
 
-use crate::offsets;
+use crate::OFFSETS;
 use crate::ADDRESSES;
-use crate::structs::Vector2;
-use crate::structs::Vector3;
 
 //== Main Vars ==//
 const CHEAT_NAME: &str = "lock.rs";
@@ -926,30 +902,30 @@ impl Lock {
         }
 
         unsafe {
-            for player in offsets.get_every_other_player(ADDRESSES.players) {
+            for player in OFFSETS.get_every_other_player(ADDRESSES.players) {
                 if player == 0 {
                     continue;
                 }
-                let character = offsets.get_character(player);
+                let character = OFFSETS.get_character(player);
                 if character == 0 {
                     continue;
                 }
-                let head = offsets.find_first_child(character, "Head");
+                let head = OFFSETS.find_first_child(character, "Head");
                 if head == 0 {
                     continue;
                 }
-                let pos = offsets.get_position(head);
+                let pos = OFFSETS.get_position(head);
 
-                let cool = offsets.world2screen(pos);
+                let cool = OFFSETS.world2screen(pos);
 
                 let cooo2 = egui::Pos2::new(cool.x, cool.y);
 
                 let rect = egui::Rect::from_two_pos(cooo2, cooo2);
 
-                let mut distance = *self.u32_map
+                let distance = *self.u32_map
                     .entry("temp_debug_slider2".to_owned())
                     .or_insert(69 as u32);
-                let name = "Player";
+                let _name = "Player";
 
                 // Tracers
                 if *self.bool_map.entry("esp_tracers_enabled".to_owned()).or_insert(false as bool) {
@@ -1283,7 +1259,5 @@ lazy_static! {
 }
 
 pub fn ui(ctx: &Context, i: &mut i32) {
-    unsafe {
-        LOCK.lock().unwrap().update(ctx, i);
-    }
+    LOCK.lock().unwrap().update(ctx, i);
 }

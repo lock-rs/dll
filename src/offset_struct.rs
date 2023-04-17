@@ -1,22 +1,17 @@
 use toy_arms::internal::Module;
 use crate::cxx::CxxString;
-use crate::cxx::CxxVector;
-use std::ffi::{ CString };
-use nalgebra::{ Matrix4 };
-use chiter::make_fn;
-use std::slice;
 
 use crate::structs::Vector2;
 use crate::structs::Vector3;
 use crate::structs::Vector4;
 
-fn addy(adress: usize) -> usize {
+// Rebase adress to roblox
+fn rebase_adress(adress: usize) -> usize {
     adress -
         0x00400000 +
         Module::from_module_name("RobloxPlayerBeta.exe").unwrap().module_base_address
 }
 
-pub type vecf32 = Vec<f32>;
 pub type Matrix4f32 = [f32; 16];
 
 //== Offsets Struct ==//
@@ -153,8 +148,8 @@ impl Offsets {
     }
 
     pub unsafe fn getvisualengine(&mut self) -> usize {
-        let Render = self.get_job("Render");
-        let renderview = *((Render + 0x148) as *const usize);
+        let render = self.get_job("Render");
+        let renderview = *((render + 0x148) as *const usize);
         let visualengine = *((renderview + 0x8) as *const usize);
 
         return visualengine;
@@ -177,37 +172,37 @@ impl Offsets {
     }
 
     pub unsafe fn world2screen(&mut self, position: &Vector3) -> Vector2 {
-        let viewMatrix = self.get_viewmatrix();
+        let view_matrix = self.get_viewmatrix();
 
-        let mut clipCoords = Vector4 {
-            X: position.x * viewMatrix[0] +
-            position.y * viewMatrix[1] +
-            position.z * viewMatrix[2] +
-            viewMatrix[3],
-            Y: position.x * viewMatrix[4] +
-            position.y * viewMatrix[5] +
-            position.z * viewMatrix[6] +
-            viewMatrix[7],
-            Z: position.x * viewMatrix[8] +
-            position.y * viewMatrix[9] +
-            position.z * viewMatrix[10] +
-            viewMatrix[11],
-            W: position.x * viewMatrix[12] +
-            position.y * viewMatrix[13] +
-            position.z * viewMatrix[14] +
-            viewMatrix[15],
+        let clip_coords = Vector4 {
+            x: position.x * view_matrix[0] +
+            position.y * view_matrix[1] +
+            position.z * view_matrix[2] +
+            view_matrix[3],
+            y: position.x * view_matrix[4] +
+            position.y * view_matrix[5] +
+            position.z * view_matrix[6] +
+            view_matrix[7],
+            z: position.x * view_matrix[8] +
+            position.y * view_matrix[9] +
+            position.z * view_matrix[10] +
+            view_matrix[11],
+            w: position.x * view_matrix[12] +
+            position.y * view_matrix[13] +
+            position.z * view_matrix[14] +
+            view_matrix[15],
         };
 
         let screendim = self.getscreendim();
 
-        if clipCoords.W < 0.1 {
+        if clip_coords.w < 0.1 {
             return Vector2 { x: -1.0, y: -1.0 }; // Off screen.
         }
 
-        let mut cool = Vector3 {
-            x: clipCoords.X / clipCoords.W,
-            y: clipCoords.Y / clipCoords.W,
-            z: clipCoords.Z / clipCoords.W,
+        let cool = Vector3 {
+            x: clip_coords.x / clip_coords.w,
+            y: clip_coords.y / clip_coords.w,
+            z: clip_coords.z / clip_coords.w,
         };
 
         let out = Vector2 {
@@ -232,11 +227,11 @@ impl Offsets {
 
     //== Get Task ==//
     pub unsafe fn get_task(&mut self) -> usize {
-        crate::make_fn!(addy(self.task_scheduler as usize), usize)()
+        crate::make_fn!(rebase_adress(self.task_scheduler as usize), usize)()
     }
 
     pub unsafe fn fireproxi(&mut self, instance: usize) {
-        crate::make_fn!(addy(self.fireprox as usize), (), usize, i32)(instance, 0);
+        crate::make_fn!(rebase_adress(self.fireprox as usize), (), usize, i32)(instance, 0);
     }
 
     //== Get Parent ==//
@@ -285,7 +280,7 @@ impl Offsets {
 
     //== Find First Child Of Type ==//
     pub unsafe fn find_first_child_of_class(&mut self, instance: usize, child_name: &str) -> usize {
-        let mut return_value: usize = 0;
+        let return_value: usize = 0;
 
         for i in self.get_children(instance) {
             if self.get_name(i).to_string().as_str() == child_name {
@@ -349,7 +344,7 @@ impl Offsets {
         let var = text.replace(|c: char| !c.is_ascii(), "");
 
         let print_func = crate::make_fn!(
-            addy(self.roblox_printaddy as usize),
+            rebase_adress(self.roblox_printaddy as usize),
             (),
             i32,
             crate::CString

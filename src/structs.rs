@@ -29,8 +29,8 @@ impl Vector3 {
 
 // Vector 4
 pub struct Vector4 {
-    pub X: f32,
-    pub Y: f32,
-    pub Z: f32,
-    pub W: f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub w: f32,
 }

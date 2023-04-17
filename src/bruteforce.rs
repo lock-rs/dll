@@ -1,15 +1,15 @@
 // Defining Struct
-use crate::offsets;
-use xorstring::XorString;
+use crate::OFFSETS;
 
-pub unsafe fn GetCharacterOffset() -> usize {
-    let datamodel = offsets.get_datamodel();
-    let players = offsets.find_first_child(datamodel,"Players");
-    let localplayer = offsets.get_children(players)[0];
-    let localplayername = offsets.get_name(localplayer);
 
-    let workspace = offsets.find_first_child(datamodel,"Workspace");
-    let localplayerws = offsets.find_first_child(workspace,&localplayername);
+pub unsafe fn get_character_offset() -> usize {
+    let datamodel = OFFSETS.get_datamodel();
+    let players = OFFSETS.find_first_child(datamodel,"Players");
+    let localplayer = OFFSETS.get_children(players)[0];
+    let localplayername = OFFSETS.get_name(localplayer);
+
+    let workspace = OFFSETS.find_first_child(datamodel,"Workspace");
+    let localplayerws = OFFSETS.find_first_child(workspace,&localplayername);
 
     // Loop through jobs
     let mut off = 0x0 as usize;
@@ -17,15 +17,15 @@ pub unsafe fn GetCharacterOffset() -> usize {
         off += 4;
     } 
 
-    offsets.roblox_print(format!("Player Character Offset {:x}",off).as_str());
+    OFFSETS.roblox_print(format!("Player Character Offset {:x}",off).as_str());
 
     off
 }
 
-pub unsafe fn GetLocalPlayerOffset() -> usize {
-    let datamodel = offsets.get_datamodel();
-    let players = offsets.find_first_child(datamodel,"Players");
-    let localplayer = offsets.get_children(players)[0];
+pub unsafe fn get_localplayer_offset() -> usize {
+    let datamodel = OFFSETS.get_datamodel();
+    let players = OFFSETS.find_first_child(datamodel,"Players");
+    let localplayer = OFFSETS.get_children(players)[0];
 
     // Loop through jobs
     let mut off = 0x0 as usize;
@@ -33,15 +33,15 @@ pub unsafe fn GetLocalPlayerOffset() -> usize {
         off += 4;
     } 
 
-    offsets.roblox_print(format!("Players LocalPlayer Offset {:x}",off).as_str());
+    OFFSETS.roblox_print(format!("Players LocalPlayer Offset {:x}",off).as_str());
 
     off
 }
 
-pub unsafe fn GetUserIDOffset() -> usize {
-    let datamodel = offsets.get_datamodel();
-    let players = offsets.find_first_child(datamodel,"Players");
-    let localplayer = offsets.get_children(players)[0];
+pub unsafe fn get_user_id_offset() -> usize {
+    let datamodel = OFFSETS.get_datamodel();
+    let players = OFFSETS.find_first_child(datamodel,"Players");
+    let localplayer = OFFSETS.get_children(players)[0];
     
     // Loop through jobs
     let mut off = 0x0 as usize;
@@ -49,15 +49,15 @@ pub unsafe fn GetUserIDOffset() -> usize {
         off += 4;
     } 
 
-    offsets.roblox_print(format!("Players UserID Offset {:x}",off).as_str());
+    OFFSETS.roblox_print(format!("Players UserID Offset {:x}",off).as_str());
 
     off
 }
 
 
 // https://www.roblox.com/games/12109643/Fencing
-pub unsafe fn GetPlaceIDOffset() -> usize {
-    let datamodel = offsets.get_datamodel();
+pub unsafe fn get_place_id_offset() -> usize {
+    let datamodel = OFFSETS.get_datamodel();
     
     // Loop through jobs
     let mut off = 0x0 as usize;
@@ -65,7 +65,7 @@ pub unsafe fn GetPlaceIDOffset() -> usize {
         off += 4;
     } 
 
-    offsets.roblox_print(format!("Players PlaceID Offset {:x}",off).as_str());
+    OFFSETS.roblox_print(format!("Players PlaceID Offset {:x}",off).as_str());
 
     off
 }
