@@ -1082,10 +1082,14 @@ impl Lock {
 
                         if self.window_theme {
                             let mut lightmode = egui::Visuals::light();
-/*                             lightmode.window_shadow = egui::epaint::Shadow {
+                            lightmode.window_shadow = egui::epaint::Shadow {
                                 extrusion: 0.0,
                                 color: Color32::from_rgb(0, 0, 0),
-                            }; */
+                            };
+                            lightmode.popup_shadow = egui::epaint::Shadow {
+                                extrusion: 0.0,
+                                color: Color32::from_rgb(0, 0, 0),
+                            };
                             ctx.set_visuals(lightmode);
 
                             if
@@ -1098,10 +1102,15 @@ impl Lock {
                             }
                         } else {
                             let mut darkmode = egui::Visuals::dark();
-/*                             darkmode.window_shadow = egui::epaint::Shadow {
+                            darkmode.window_shadow = egui::epaint::Shadow {
                                 extrusion: 0.0,
                                 color: Color32::from_rgb(0, 0, 0),
-                            }; */
+                            };
+                            darkmode.popup_shadow = egui::epaint::Shadow {
+                                extrusion: 0.0,
+                                color: Color32::from_rgb(0, 0, 0),
+                            };
+
                             ctx.set_visuals(darkmode);
 
                             if
