@@ -21,7 +21,7 @@ use egui::{
     Widget,
     Ui,
 };
-// TEST
+
 //== Crates ==//
 extern crate winreg;
 extern crate crossterm;
@@ -32,31 +32,20 @@ use std::io;
 use std::path::Path;
 use winreg::enums::*;
 use winreg::RegKey;
-
 use std::collections::HashMap;
-
 use core::time::Duration;
-
 use std::{ thread, time, sync::mpsc };
 
 use crate::offsets;
-
-// use crate::crossterm::style::Stylize;
-//use winconsole::console;
+use crate::ADDRESSES;
 
 //== Main Vars ==//
-const REG_NAME: &str = "lock.rs";
-const WINDOW_NAME: &str = "lock.rs";
+const CHEAT_NAME: &str = "lock.rs";
 const INFO_CHAR: &str = "ℹ";
-
-const DLL_NAME: &str = "lock.dll";
 
 // Gui Spacing //
 const SPACING: f32 = 5.0;
 const SMALL_SPACING: f32 = 3.0;
-use crate::ADDRESSES;
-
-//== Struct Defaults ==//
 
 //== Draw Toggle Func ==//
 fn ui_toggle(ui: &mut egui::Ui, on: &mut bool) -> egui::Response {
@@ -909,12 +898,12 @@ impl Lock {
                         *self.u32_map
                             .entry("aimbot_fov_value".to_owned())
                             .or_insert(100 as u32) as f32,
-                            fov_color,
+                        fov_color,
                         egui::Stroke::new(
                             *self.f32_map
                                 .entry("fov_circle_thickness".to_owned())
                                 .or_insert(1.0 as f32),
-                                fov_color
+                            fov_color
                         )
                     );
                 } else {
@@ -927,7 +916,7 @@ impl Lock {
                             *self.f32_map
                                 .entry("fov_circle_thickness".to_owned())
                                 .or_insert(1.5 as f32),
-                                fov_color
+                            fov_color
                         )
                     );
                 }
@@ -1053,24 +1042,11 @@ impl Lock {
             // Player ESP
 
             egui::Window
-                ::new(WINDOW_NAME)
+                ::new(CHEAT_NAME)
                 .resizable(false)
                 .fixed_size(egui::Vec2::new(700.0, 500.0))
                 .show(ctx, |ui| {
-                    //== Main Frame ==//
-                    // let win = egui::Window::new(WINDOW_NAME)
-                    //     .scroll2([true, true])
-                    //     .default_size(Vec2::new(600.0, 9000.0))
-                    //     .title_bar(true)
-                    //     .resizable(false);
-
-                    //.align_to_end(true);
-
                     ui.horizontal(|ui| {
-                        // ui.menu_button("⛭", |ui|{
-
-                        // });
-
                         if
                             ui
                                 .add(egui::Button::new("⛭"))
@@ -1140,23 +1116,11 @@ impl Lock {
                                 .selectable_value(&mut self.selected_tab, 2, "ESP")
                                 .on_hover_cursor(egui::CursorIcon::PointingHand);
                             let tab3 = ui
-                                .selectable_value(&mut self.selected_tab, 3, "Configs")
-                                .on_hover_cursor(egui::CursorIcon::PointingHand);
-                            let tab4 = ui
-                                .selectable_value(&mut self.selected_tab, 4, "Lua")
-                                .on_hover_cursor(egui::CursorIcon::PointingHand);
-                            let tab5 = ui
                                 .selectable_value(&mut self.selected_tab, 5, "Misc")
                                 .on_hover_cursor(egui::CursorIcon::PointingHand);
                             ui.add_space(150.0);
 
-                            if
-                                tab1.clicked() ||
-                                tab2.clicked() ||
-                                tab3.clicked() ||
-                                tab4.clicked() ||
-                                tab5.clicked()
-                            {
+                            if tab1.clicked() || tab2.clicked() || tab3.clicked() {
                                 self.settings_frame_open = false;
                             }
                         });

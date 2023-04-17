@@ -1,27 +1,40 @@
 #![allow(warnings)]
 use egui::{
-    Align2, Color32, Context, FontData, FontDefinitions, FontFamily, FontId, FontTweak, Key,
-    Modifiers, Pos2, Rect, RichText, ScrollArea, Slider, Stroke, TextureId, TextureOptions, Vec2,
+    Align2,
+    Color32,
+    Context,
+    FontData,
+    FontDefinitions,
+    FontFamily,
+    FontId,
+    FontTweak,
+    Key,
+    Modifiers,
+    Pos2,
+    Rect,
+    RichText,
+    ScrollArea,
+    Slider,
+    Stroke,
+    TextureId,
+    TextureOptions,
+    Vec2,
     Widget,
 };
 use egui_d3d11::DirectX11App;
-use faithe::{internal::alloc_console, pattern::Pattern};
-use std::{
-    intrinsics::transmute,
-    sync::{Arc, Once},
-};
+use faithe::{ internal::alloc_console, pattern::Pattern };
+use std::{ intrinsics::transmute, sync::{ Arc, Once } };
 use windows::{
     core::HRESULT,
     Win32::{
-        Foundation::{HWND, LPARAM, LRESULT, WPARAM},
-        Graphics::Dxgi::{Common::DXGI_FORMAT, IDXGISwapChain},
-        UI::WindowsAndMessaging::{CallWindowProcW, SetWindowLongPtrA, GWLP_WNDPROC, WNDPROC},
+        Foundation::{ HWND, LPARAM, LRESULT, WPARAM },
+        Graphics::Dxgi::{ Common::DXGI_FORMAT, IDXGISwapChain },
+        UI::WindowsAndMessaging::{ CallWindowProcW, SetWindowLongPtrA, GWLP_WNDPROC, WNDPROC },
     },
 };
 
-use crate::offsets;
-use offsets::Vector2;
-use offsets::Vector3;
+use crate::structs::Vector2;
+use crate::structs::Vector3;
 use retour::static_detour;
 use shroud::directx::directx11;
 
@@ -29,15 +42,28 @@ static mut APP: DirectX11App<i32> = DirectX11App::new();
 static mut OLD_WND_PROC: Option<WNDPROC> = None;
 
 type FnPresent = unsafe extern "stdcall" fn(IDXGISwapChain, u32, u32) -> HRESULT;
-type FnResizeBuffers =
-    unsafe extern "stdcall" fn(IDXGISwapChain, u32, u32, u32, DXGI_FORMAT, u32) -> HRESULT;
+type FnResizeBuffers = unsafe extern "stdcall" fn(
+    IDXGISwapChain,
+    u32,
+    u32,
+    u32,
+    DXGI_FORMAT,
+    u32
+) -> HRESULT;
 
 static mut O_PRESENT: Option<FnPresent> = None;
 static mut O_RESIZE_BUFFERS: Option<FnResizeBuffers> = None;
 
 static_detour! {
     static PresentHook: unsafe extern "stdcall" fn(IDXGISwapChain, u32, u32) -> HRESULT;
-    static ResizeBufferHook: unsafe extern "stdcall" fn(IDXGISwapChain, u32, u32, u32, DXGI_FORMAT, u32) -> HRESULT;
+    static ResizeBufferHook: unsafe extern "stdcall" fn(
+        IDXGISwapChain,
+        u32,
+        u32,
+        u32,
+        DXGI_FORMAT,
+        u32
+    ) -> HRESULT;
 }
 
 fn hk_present(swap_chain: IDXGISwapChain, sync_interval: u32, flags: u32) -> HRESULT {
@@ -45,7 +71,6 @@ fn hk_present(swap_chain: IDXGISwapChain, sync_interval: u32, flags: u32) -> HRE
         static INIT: Once = Once::new();
 
         INIT.call_once(|| {
-
             APP.init_default(&swap_chain, crate::ui::ui);
 
             let mut desc = unsafe { std::mem::zeroed() };
@@ -56,11 +81,11 @@ fn hk_present(swap_chain: IDXGISwapChain, sync_interval: u32, flags: u32) -> HRE
                 panic!("Invalid window handle");
             }
 
-            OLD_WND_PROC = Some(transmute(SetWindowLongPtrA(
-                desc.OutputWindow,
-                GWLP_WNDPROC,
-                hk_wnd_proc as usize as _,
-            )));
+            OLD_WND_PROC = Some(
+                transmute(
+                    SetWindowLongPtrA(desc.OutputWindow, GWLP_WNDPROC, hk_wnd_proc as usize as _)
+                )
+            );
         });
 
         APP.present(&swap_chain);
@@ -75,7 +100,7 @@ fn hk_resize_buffers(
     width: u32,
     height: u32,
     new_format: DXGI_FORMAT,
-    swap_chain_flags: u32,
+    swap_chain_flags: u32
 ) -> HRESULT {
     eprintln!("Resizing buffers");
     unsafe {
@@ -86,7 +111,7 @@ fn hk_resize_buffers(
                 width,
                 height,
                 new_format,
-                swap_chain_flags,
+                swap_chain_flags
             )
         })
     }
@@ -96,15 +121,12 @@ unsafe extern "stdcall" fn hk_wnd_proc(
     hwnd: HWND,
     msg: u32,
     wparam: WPARAM,
-    lparam: LPARAM,
+    lparam: LPARAM
 ) -> LRESULT {
     APP.wnd_proc(msg, wparam, lparam);
 
     CallWindowProcW(OLD_WND_PROC.unwrap(), hwnd, msg, wparam, lparam)
 }
-
-
-
 
 static mut FRAME: i32 = 0;
 /* fn ui(ctx: &Context, i: &mut i32) {
@@ -1225,15 +1247,7 @@ pub unsafe fn main_thread(_hinst: usize) {
     let present: FnPresent = std::mem::transmute(methods.swapchain_vmt()[8]);
     let swap_buffers: FnResizeBuffers = std::mem::transmute(methods.swapchain_vmt()[13]);
 
-    PresentHook
-        .initialize(present, hk_present)
-        .unwrap()
-        .enable()
-        .unwrap();
+    PresentHook.initialize(present, hk_present).unwrap().enable().unwrap();
 
-    ResizeBufferHook
-        .initialize(swap_buffers, hk_resize_buffers)
-        .unwrap()
-        .enable()
-        .unwrap();
+    ResizeBufferHook.initialize(swap_buffers, hk_resize_buffers).unwrap().enable().unwrap();
 }

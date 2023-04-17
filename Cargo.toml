@@ -66,3 +66,8 @@ features = ["save-blob", "parking-lot"]
 
 [build]
 target = "nightly-i686-pc-windows-msvc"
+
+# Custom Scripts
+[package.metadata.commands]
+build = "rustup run nightly-i686-pc-windows-msvc cargo build"
+release = "rustup run nightly-i686-pc-windows-msvc cargo build --release"
