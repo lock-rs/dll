@@ -16,14 +16,7 @@ use std::collections::HashMap;
 
 use crate::OFFSETS;
 use crate::ADDRESSES;
-
-//== Main Vars ==//
-const CHEAT_NAME: &str = "lock.rs";
-const INFO_CHAR: &str = "ℹ";
-
-// Gui Spacing //
-const SPACING: f32 = 5.0;
-const SMALL_SPACING: f32 = 3.0;
+use crate::vars::{CHEAT_NAME, INFO_CHAR, UI_SPACING, UI_SMALL_SPACING};
 
 //== Draw Toggle Func ==//
 fn ui_toggle(ui: &mut egui::Ui, on: &mut bool) -> egui::Response {
@@ -169,14 +162,14 @@ impl Lock {
                     "Stinky Aim"
                 ).on_hover_cursor(egui::CursorIcon::PointingHand);
             });
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
         }
 
         ui.add_enabled_ui(*self.bool_map.entry("aimbot_enabled".to_owned()).or_insert(false), |ui| {
             // If Aimbot On
 
             // Range
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
             ui.horizontal(|ui| {
                 ui.add(
                     toggle(
@@ -212,7 +205,7 @@ impl Lock {
             });
 
             // FOV
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
             ui.horizontal(|ui| {
                 ui.add(
                     toggle(
@@ -267,7 +260,7 @@ impl Lock {
             });
 
             // Triggerbot
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
             ui.horizontal(|ui| {
                 ui.add(
                     toggle(
@@ -378,7 +371,7 @@ impl Lock {
                 );
             });
 
-            ui.add_space(SMALL_SPACING);
+            ui.add_space(UI_SMALL_SPACING);
 
             ui.horizontal(|ui| {
                 ui.add(
@@ -396,7 +389,7 @@ impl Lock {
                 }
             });
 
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
 
             ui.horizontal(|ui| {
                 egui::ComboBox
@@ -433,7 +426,7 @@ impl Lock {
                 }
             });
 
-            ui.add_space(SMALL_SPACING);
+            ui.add_space(UI_SMALL_SPACING);
 
             ui.horizontal(|ui| {
                 egui::ComboBox
@@ -565,12 +558,12 @@ impl Lock {
                         "Show Distance"
                     ).on_hover_cursor(egui::CursorIcon::PointingHand);
                 });
-                ui.add_space(SPACING);
+                ui.add_space(UI_SPACING);
             }
 
             {
                 // Teamcheck
-                ui.add_space(SPACING);
+                ui.add_space(UI_SPACING);
 
                 ui.horizontal(|ui| {
                     ui.add(
@@ -614,7 +607,7 @@ impl Lock {
                                     "Team Based ESP Color"
                                 ).on_hover_cursor(egui::CursorIcon::PointingHand);
                             });
-                            ui.add_space(SPACING);
+                            ui.add_space(UI_SPACING);
                         }
                     }
                 );
@@ -652,7 +645,7 @@ impl Lock {
             }
 
             // Tracers
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
 
             ui.horizontal(|ui| {
                 ui.add(
@@ -747,7 +740,7 @@ impl Lock {
             });
 
             // Health
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
 
             ui.horizontal(|ui| {
                 ui.add(
@@ -782,7 +775,7 @@ impl Lock {
             });
 
             // Distance Limit
-            ui.add_space(SPACING);
+            ui.add_space(UI_SPACING);
 
             ui.horizontal(|ui| {
                 ui.add(
@@ -1134,7 +1127,7 @@ impl Lock {
                                     ).on_hover_cursor(egui::CursorIcon::PointingHand);
 
                                     // ESP Settings
-                                    ui.add_space(SPACING);
+                                    ui.add_space(UI_SPACING);
                                     ui.heading("ESP Settings");
                                     ui.add(
                                         egui::Separator::spacing(
@@ -1179,7 +1172,7 @@ impl Lock {
                                     ).on_hover_cursor(egui::CursorIcon::PointingHand);
 
                                     // Aimbot Settingsdraw_aimbot_panelup
-                                    ui.add_space(SPACING);
+                                    ui.add_space(UI_SPACING);
                                     ui.heading("Aimbot Settings");
 
                                     ui.horizontal(|ui| {

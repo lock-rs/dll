@@ -36,6 +36,8 @@ mod bruteforce;
 mod ui;
 
 fn main(_hinst: usize) {
+
+
     env::set_var("RUST_BACKTRACE", "full");
     unsafe {
             winapi::um::consoleapi::AllocConsole();
