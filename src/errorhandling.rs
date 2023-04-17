@@ -44,7 +44,6 @@ pub fn init_errorhandler() {
 use std::io::{Write,BufWriter};
 use std::write; */
 use std::process::exit;
-use std::backtrace::Backtrace;
 
 unsafe extern "system" fn ExceptionFilter(
     info: *const windows::Win32::System::Diagnostics::Debug::EXCEPTION_POINTERS
