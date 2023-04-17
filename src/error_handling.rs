@@ -17,7 +17,7 @@ pub fn init_errorhandler() {
 
     // get the unhandledexception_filter function
     let rtl_set_unhandled_exception_filter_address = unsafe {
-        GetProcAddress(ntdll, s!("RtlSetUnhandledexception_filter")).expect(
+        GetProcAddress(ntdll, s!("RtlSetUnhandledExceptionFilter")).expect(
             "Failed to get SetUnhandledexception_filter address"
         )
     };

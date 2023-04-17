@@ -7,7 +7,7 @@ extern crate cxx;
 mod structs;
 mod offset_struct;
 mod error_handling;
-
+mod vars;
 //== Use ==//
 use std::{ ffi::{ CString, CStr, c_char } };
 use chiter::make_fn;

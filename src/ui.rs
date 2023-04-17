@@ -10,13 +10,15 @@ use egui::{
 extern crate winreg;
 extern crate crossterm;
 extern crate winconsole;
+use egui::FontId;
 
 //== Use ==//
 use std::collections::HashMap;
+use egui::emath::Align2;
 
 use crate::OFFSETS;
 use crate::ADDRESSES;
-use crate::vars::{CHEAT_NAME, INFO_CHAR, UI_SPACING, UI_SMALL_SPACING};
+use crate::vars::{CHEAT_NAME, INFO_CHAR, UI_SPACING, UI_SMALL_SPACING, UI_SIZE};
 
 //== Draw Toggle Func ==//
 fn ui_toggle(ui: &mut egui::Ui, on: &mut bool) -> egui::Response {
@@ -56,6 +58,7 @@ pub struct Lock {
 
     // Settings
     settings_frame_open: bool,
+    keybind_frame_open: bool,
     window_tooltips_enabled: bool,
 
     // HashMaps
@@ -81,6 +84,7 @@ impl Default for Lock {
 
             // Settings
             settings_frame_open: false,
+            keybind_frame_open: false,
             window_tooltips_enabled: true,
 
             // HashMaps
@@ -101,6 +105,7 @@ impl Default for Lock {
 impl Lock {
     //== Aimbot Panel ==//
     fn draw_aimbot_panel(&mut self, ui: &mut egui::Ui) {
+        
         // Enabled
         ui.horizontal(|ui| {
             ui.add(
@@ -836,6 +841,8 @@ impl Lock {
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut i32) {
         //== Rendering ESP ==//
+        if (!self.window_open) {return;}
+        
         let pointer_pos = ctx.pointer_latest_pos();
         if pointer_pos.is_some() {
             // FOV Circle
@@ -895,138 +902,244 @@ impl Lock {
         }
 
         unsafe {
-            for player in OFFSETS.get_every_other_player(ADDRESSES.players) {
-                if player == 0 {
-                    continue;
-                }
-                let character = OFFSETS.get_character(player);
-                if character == 0 {
-                    continue;
-                }
-                let head = OFFSETS.find_first_child(character, "Head");
-                if head == 0 {
-                    continue;
-                }
-                let pos = OFFSETS.get_position(head);
 
-                let cool = OFFSETS.world2screen(pos);
-
-                let cooo2 = egui::Pos2::new(cool.x, cool.y);
-
-                let rect = egui::Rect::from_two_pos(cooo2, cooo2);
-
-                let distance = *self.u32_map
-                    .entry("temp_debug_slider2".to_owned())
-                    .or_insert(69 as u32);
-                let _name = "Player";
-
-                // Tracers
-                if *self.bool_map.entry("esp_tracers_enabled".to_owned()).or_insert(false as bool) {
-                    let mut tracer_clr = *self.color_map
-                        .entry("esp_tracers_color".to_owned())
-                        .or_insert([255, 255, 255, 255] as [u8; 4]);
-
-                    if
-                        *self.bool_map
-                            .entry("esp_tracers_distance_based".to_owned())
-                            .or_insert(false as bool)
-                    {
-                        let mut max_dist = 1000;
-                        if
-                            *self.bool_map
-                                .entry("esp_distance_limited".to_owned())
-                                .or_insert(false as bool)
-                        {
-                            max_dist = *self.u32_map
-                                .entry("esp_distance_limit".to_owned())
-                                .or_insert(1000 as u32);
-                        }
-
-                        let new_dist = if distance == 0 { 1 } else { distance };
-
-                        let green = 255.0 - 255.0 / ((max_dist as f32) / (new_dist as f32));
-                        let red = 255.0 / ((max_dist as f32) / (new_dist as f32));
-
-                        tracer_clr = [red as u8, green as u8, 0, 255];
+            if *self.bool_map.entry("esp_enabled".to_owned()).or_insert(false as bool) {
+                for player in OFFSETS.get_every_other_player(ADDRESSES.players) {
+                    if player == 0 {
+                        continue;
                     }
-                    let tracer_color = Color32::from_rgba_premultiplied(
-                        tracer_clr[0],
-                        tracer_clr[1],
-                        tracer_clr[2],
-                        tracer_clr[3]
-                    );
-                    match
-                        *self.usize_map.entry("esp_tracers_type".to_owned()).or_insert(0 as usize)
-                    {
-                        0 => {
-                            // TOP
-                            ctx.debug_painter().line_segment(
-                                [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(1.5, tracer_color)
-                            );
-                        }
-                        1 => {
-                            // Middle
-                            ctx.debug_painter().line_segment(
-                                [rect.center_bottom(), ctx.available_rect().center()],
-                                egui::Stroke::new(1.5, tracer_color)
-                            );
-                        }
-                        2 => {
-                            // Bottom Middle
-                            ctx.debug_painter().line_segment(
-                                [
-                                    rect.center_bottom(),
-                                    ctx.available_rect().center_bottom() -
-                                        Vec2::new(0.0, ctx.available_rect().height() / 5.0),
-                                ],
-                                egui::Stroke::new(1.5, tracer_color)
-                            );
-                        }
-                        3 => {
-                            // Bottom
-                            ctx.debug_painter().line_segment(
-                                [rect.center_bottom(), ctx.available_rect().center_bottom()],
-                                egui::Stroke::new(1.5, tracer_color)
-                            );
-                        }
-                        4 => {
-                            if pointer_pos.is_some() {
-                                ctx.debug_painter().line_segment(
-                                    [rect.center_bottom(), pointer_pos.unwrap()],
-                                    egui::Stroke::new(1.5, tracer_color)
-                                );
+                    let character = OFFSETS.get_character(player);
+                    if character == 0 {
+                        continue;
+                    }
+                    let head = OFFSETS.find_first_child(character, "Head");
+                    if head == 0 {
+                        continue;
+                    }
+                    let mut leg = OFFSETS.find_first_child(character, "LeftLowerLeg");
+                    if leg == 0 {
+                        leg = OFFSETS.find_first_child(character, "Left Leg");
+                    }
+
+                    if leg == 0 {
+                        continue;
+                    }
+/*                     let characterlc = OFFSETS.get_character(ADDRESSES.localplayer);
+                    let headlc = OFFSETS.find_first_child(character, "Head");
+                     */
+
+                    let head_pos = OFFSETS.get_position(head);
+                    let head_wts_pos = OFFSETS.world2screen(head_pos);
+
+                    let leg_pos = OFFSETS.get_position(leg);
+                    let leg_wts_pos = OFFSETS.world2screen(leg_pos);
+                    
+                    let width = (
+                        (head_pos.x - leg_pos.x).powi(2) +
+                        (head_pos.z - leg_pos.z).powi(2)
+                    ).sqrt();
+                    
+                    // Player Rectangle Box
+                    let rect = egui::Rect::from_two_pos(egui::Pos2::new(head_wts_pos.x - (width / 2.0), head_wts_pos.y), egui::Pos2::new(leg_wts_pos.x + (width / 2.0), leg_wts_pos.y));
+
+                    // Tracers
+                    
+                        let esp_clr = *self.color_map.entry("esp_color".to_owned()).or_insert([255,255,255,255] as [u8;4]);
+            
+                        // Player Vars
+                        // let rect = egui::Rect::from_two_pos(egui::Pos2::new(200.0, 200.0), egui::Pos2::new(250.0, 300.0));
+                        let get_name = OFFSETS.get_name(player);
+                        let name = get_name.as_str();
+                        let mut distance = (0 as u32);
+
+/*                         if headlc != 0 {
+                            let localplayerpos = OFFSETS.get_position(headlc);
+                            distance = pos.distance(&localplayerpos) as u32;
+                        } */
+            
+                        // Tracers
+                        if *self.bool_map.entry("esp_tracers_enabled".to_owned()).or_insert(false as bool) {
+                            let mut tracer_clr = *self.color_map.entry("esp_tracers_color".to_owned()).or_insert([255,255,255,255] as [u8;4]);
+            
+                            if *self.bool_map.entry("esp_tracers_distance_based".to_owned()).or_insert(false as bool) {
+                                let mut max_dist = 1000;
+                                if *self.bool_map.entry("esp_distance_limited".to_owned()).or_insert(false as bool) {max_dist = *self.u32_map.entry("esp_distance_limit".to_owned()).or_insert(1000 as u32)};
+            
+                                let new_dist = if distance == 0 {1} else {distance};
+            
+                                let green = 255.0 - 255.0 / (max_dist as f32 / new_dist as f32);
+                                let red = 255.0 / (max_dist as f32 / new_dist as f32);
+            
+                                tracer_clr = [red as u8, green as u8, 0, 255];
+                            }
+            
+                            match *self.usize_map.entry("esp_tracers_type".to_owned()).or_insert(0 as usize) {
+                                0 => { // TOP
+                                    ctx.debug_painter().line_segment([rect.center_bottom(), ctx.available_rect().center_top()], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])));
+                                },
+                                1 => { // Middle
+                                    ctx.debug_painter().line_segment([rect.center_bottom(), ctx.available_rect().center()], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])));
+                                },
+                                2 => { // Bottom Middle
+                                    ctx.debug_painter().line_segment([rect.center_bottom(), ctx.available_rect().center_bottom() - egui::Vec2::new(0.0, ctx.available_rect().height() / 5.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])));
+                                },  
+                                3 => { // Bottom
+                                    ctx.debug_painter().line_segment([rect.center_bottom(), ctx.available_rect().center_bottom()], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])));
+                                },
+                                4 => {
+                                    if pointer_pos.is_some() {ctx.debug_painter().line_segment([rect.center_bottom(), pointer_pos.unwrap()], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])))};
+                                }
+            
+                                _ => { // Overflow
+                                    ctx.debug_painter().line_segment([rect.center_bottom(), ctx.available_rect().center_top()], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(tracer_clr[0], tracer_clr[1], tracer_clr[2], tracer_clr[3])));
+                                },
                             }
                         }
-
-                        _ => {
-                            // Overflow
-                            ctx.debug_painter().line_segment(
-                                [rect.center_bottom(), ctx.available_rect().center_top()],
-                                egui::Stroke::new(1.5, tracer_color)
-                            );
+            
+                        // ESP BOX
+                        match *self.usize_map.entry("esp_type".to_owned()).or_insert(1 as usize) {
+                            0 => { // None
+            
+                            },
+                            1 => { // 2D Box
+                                if *self.bool_map.entry("esp_box_filled".to_owned()).or_insert(false as bool) {
+                            
+                                    ctx.debug_painter().rect(
+                                        rect,
+                                        *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                        Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]),
+                                        egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])),
+                                    );
+                                } else {
+                    
+                                    ctx.debug_painter().rect_stroke(
+                                        rect,
+                                        *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                        egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])),
+                                    );
+                                }
+                            },
+                            2 => { // 3D Box
+            
+                            },
+                            3 => { // Corners
+                                if *self.bool_map.entry("esp_box_filled".to_owned()).or_insert(false as bool) {
+                            
+                                    ctx.debug_painter().rect(
+                                        rect,
+                                        *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                        Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]),
+                                        egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])),
+                                    );
+                                } else {
+                                    ctx.debug_painter().line_segment([rect.left_top(), rect.left_top() + egui::Vec2::new(rect.width() / 4.0, 0.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                    ctx.debug_painter().line_segment([rect.left_top(), rect.left_top() + egui::Vec2::new(0.0, rect.width() / 2.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                
+                                    ctx.debug_painter().line_segment([rect.right_top(), rect.right_top() - egui::Vec2::new(rect.width() / 4.0, 0.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                    ctx.debug_painter().line_segment([rect.right_top(), rect.right_top() + egui::Vec2::new(0.0, rect.width() / 2.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+            
+                                    ctx.debug_painter().line_segment([rect.left_bottom(), rect.left_bottom() + egui::Vec2::new(rect.width() / 4.0, 0.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                    ctx.debug_painter().line_segment([rect.left_bottom(), rect.left_bottom() - egui::Vec2::new(0.0, rect.width() / 2.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+            
+                                    ctx.debug_painter().line_segment([rect.right_bottom(), rect.right_bottom() - egui::Vec2::new(rect.width() / 4.0, 0.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                    ctx.debug_painter().line_segment([rect.right_bottom(), rect.right_bottom() - egui::Vec2::new(0.0, rect.width() / 2.0)], egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])));
+                                }
+                            },
+            
+                            _ => { // Exces
+                                if *self.bool_map.entry("esp_box_filled".to_owned()).or_insert(false as bool) {
+                            
+                                    ctx.debug_painter().rect(
+                                        egui::Rect::from_two_pos(egui::Pos2::new(200.0, 200.0), egui::Pos2::new(250.0, 300.0)),
+                                        *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                        Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]),
+                                        egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])),
+                                    );
+                                } else {
+                    
+                                    ctx.debug_painter().rect_stroke(
+                                        egui::Rect::from_two_pos(egui::Pos2::new(200.0, 200.0), egui::Pos2::new(250.0, 300.0)),
+                                        *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                        egui::Stroke::new(1.0, Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3])),
+                                    );
+                                }
+                            },
                         }
-                    }
+            
+                        if *self.bool_map.entry("esp_health_bar".to_owned()).or_insert(false as bool) && *self.bool_map.entry("esp_show_health".to_owned()).or_insert(false as bool) {
+                            
+                            let tl = rect.left_top() - egui::Vec2::new(7.0 + 1.0 / 2.0, (1.0 / 2.0 - 0.5));
+                            let br = rect.left_bottom() - egui::Vec2::new(3.0 + 1.0 / 2.0, -(1.0 / 2.0 - 0.5));
+                            
+                            let hp = *self.u32_map.entry("temp_debug_slider".to_owned()).or_insert(50 as u32) as f32;
+                            let max_hp = 100.0 as f32;
+            
+                            // Outer 
+                            ctx.debug_painter().rect(
+                                egui::Rect::from_two_pos(tl - egui::Vec2::new(1.0, 1.0), br + egui::Vec2::new(1.0, 1.0)),
+                                *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]),
+                                egui::Stroke::none(),
+                            );
+            
+                            // Inner Black
+                            ctx.debug_painter().rect(
+                                egui::Rect::from_two_pos(tl, br),
+                                *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                Color32::from_rgba_unmultiplied(0, 0, 0, 255),
+                                egui::Stroke::none(),
+                            );
+            
+                            // Main Inner
+                            let new_hp = if hp <= 1.0 {1.0} else if hp >= max_hp {max_hp} else {hp};
+                            let addon = (rect.height() as f32) / (max_hp as f32 / new_hp as f32);
+            
+                            let red = 255.0 - 255.0 / (max_hp as f32 / new_hp as f32);
+                            let green = 255.0 / (max_hp as f32 / new_hp as f32);
+            
+                            ctx.debug_painter().rect(
+                                egui::Rect::from_two_pos(egui::pos2(tl.x + 1.0, br.y - addon), br - egui::Vec2::new(1.0, 0.0)),
+                                *self.f32_map.entry("esp_box_rounding".to_owned()).or_insert(6.0 as f32),
+                                Color32::from_rgb(red as u8, green as u8, 0),
+                                egui::Stroke::none(),
+                            ); 
+            
+                            if *self.bool_map.entry("esp_health_text".to_owned()).or_insert(false as bool) {
+                                ctx.debug_painter().text(egui::pos2(tl.x - 4.0, br.y + 2.0), Align2::RIGHT_BOTTOM, format!("{}/{}", hp, max_hp), FontId::proportional(*self.f32_map.entry("esp_text_size".to_owned()).or_insert(12.0 as f32)), Color32::from_rgb(red as u8, green as u8, 0));
+                            }
+                        }
+            
+                        // Distance
+                        if *self.bool_map.entry("esp_distance".to_owned()).or_insert(false as bool) {
+                            ctx.debug_painter().text(rect.center_bottom() + egui::Vec2::new(0.0, 2.0), Align2::CENTER_TOP, format!("{}", distance), FontId::proportional(*self.f32_map.entry("esp_text_size".to_owned()).or_insert(12.0 as f32)), Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]));
+                        }
+            
+                        // Names
+                        if *self.bool_map.entry("esp_names".to_owned()).or_insert(false as bool) {
+                            ctx.debug_painter().text(rect.center_top() - egui::Vec2::new(0.0, 2.0), Align2::CENTER_BOTTOM, format!("{}", name), FontId::proportional(*self.f32_map.entry("esp_text_size".to_owned()).or_insert(12.0 as f32)), Color32::from_rgba_unmultiplied(esp_clr[0], esp_clr[1], esp_clr[2], esp_clr[3]));
+                        }
                 }
             }
-
-            // Player ESP
-
+            //== UI Stuff
             egui::Window
                 ::new(CHEAT_NAME)
                 .resizable(false)
-                .fixed_size(egui::Vec2::new(700.0, 500.0))
+                .fixed_size(UI_SIZE)
                 .show(ctx, |ui| {
                     ui.horizontal(|ui| {
+
+                        // Settings Toggle button
                         if
                             ui
                                 .add(egui::Button::new("⛭"))
                                 .on_hover_cursor(egui::CursorIcon::PointingHand)
                                 .clicked()
                         {
+                            self.keybind_frame_open = false;
                             self.settings_frame_open = !self.settings_frame_open;
                         }
 
+                        // Theme button
                         if self.window_theme {
                             let mut lightmode = egui::Visuals::light();
                             lightmode.window_shadow = egui::epaint::Shadow {
@@ -1069,6 +1182,17 @@ impl Lock {
                                 self.window_theme = true;
                             }
                         }
+
+                        // Keybind Toggle button
+                        if
+                            ui
+                                .add(egui::Button::new("keybinds"))
+                                .on_hover_cursor(egui::CursorIcon::PointingHand)
+                                .clicked()
+                        {
+                            self.settings_frame_open = false;
+                            self.keybind_frame_open = !self.keybind_frame_open;
+                        }
                     });
 
                     ui.add(
@@ -1087,12 +1211,13 @@ impl Lock {
                                 .selectable_value(&mut self.selected_tab, 2, "ESP")
                                 .on_hover_cursor(egui::CursorIcon::PointingHand);
                             let tab3 = ui
-                                .selectable_value(&mut self.selected_tab, 5, "Misc")
+                                .selectable_value(&mut self.selected_tab, 3, "Misc")
                                 .on_hover_cursor(egui::CursorIcon::PointingHand);
                             ui.add_space(150.0);
 
                             if tab1.clicked() || tab2.clicked() || tab3.clicked() {
                                 self.settings_frame_open = false;
+                                self.keybind_frame_open = false;
                             }
                         });
 
@@ -1105,7 +1230,11 @@ impl Lock {
 
                         ui.vertical(|ui| {
                             egui::ScrollArea::both().show(ui, |ui| {
+
+                                
                                 if self.settings_frame_open {
+
+                                    //== Render Settings Frame
                                     self.selected_tab = 0;
 
                                     //== GUI Settings ==//
@@ -1116,7 +1245,7 @@ impl Lock {
                                             6.0
                                         )
                                     );
-
+                                        
                                     ui.checkbox(
                                         &mut self.window_tooltips_enabled,
                                         "Widget Tooltips"
@@ -1195,8 +1324,25 @@ impl Lock {
                                             .or_insert(false as bool),
                                         "FOV Circle Filled"
                                     ).on_hover_cursor(egui::CursorIcon::PointingHand);
+
+                                } else if self.keybind_frame_open {
+
+                                    //== Render Keybind Frame
+                                    self.selected_tab = 0;
+
+                                    //== Keybinds ==//
+                                    ui.heading("Keybinds");
+                                    ui.add(
+                                        egui::Separator::spacing(
+                                            egui::Separator::horizontal(egui::Separator::default()),
+                                            6.0
+                                        )
+                                    );
+                                
+
                                 } else {
-                                    // Loading Tab Panels
+
+                                    //== Render Other Frames
                                     match self.selected_tab {
                                         1 => {
                                             self.draw_aimbot_panel(ui);
