@@ -38,6 +38,8 @@ use std::{ thread, time, sync::mpsc };
 
 use crate::offsets;
 use crate::ADDRESSES;
+use crate::structs::Vector2;
+use crate::structs::Vector3;
 
 //== Main Vars ==//
 const CHEAT_NAME: &str = "lock.rs";

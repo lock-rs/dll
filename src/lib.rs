@@ -15,6 +15,7 @@ mod offsets;
 mod errorhandling;
 
 //== Use ==//
+use windows;
 use rlua::{ Function, Lua, MetaMethod, Result, UserData, UserDataMethods, Variadic };
 use std::{ ffi::{ CString, CStr, c_char }, fmt::format };
 use std::{ thread, time, str::Chars };
@@ -45,38 +46,29 @@ pub struct Addresses {
 
 pub static mut ADDRESSES: Addresses = Addresses { datamodel: 0, players: 0, localplayer: 0 };
 
-use xorstring;
-use xorstring::xorstring_procmacro;
-
-macro_rules! xorstr {
-    ($str_lit:literal) => {
-    $crate::XorString::new(xorstring_procmacro::xorstring!($str_lit).0).decrypt()
-    };
-    ($str_var:expr) => {
-    $crate::XorString::new(xorstring_procmacro::xorstring!($str_var).0).decrypt()
-    };
-}
-
 mod gay;
 mod bruteforce;
 mod ui;
 
 fn main(_hinst: usize) {
-    unsafe {
-        errorhandling::init_errorhandler();
-    }
     // println!("{}",xorstr!("Cool?55"));
 
     env::set_var("RUST_BACKTRACE", "full");
     unsafe {
-        winapi::um::consoleapi::AllocConsole();
+        // if is_debug_mode() {
+            winapi::um::consoleapi::AllocConsole();
+        // }
+    }
+
+    unsafe {
+        errorhandling::init_errorhandler();
     }
 
     unsafe {
         //let temp = crate::Module::from_module_name("RobloxPlayerBeta.exe").unwrap().module_base_address;
         //let mut offsets = Offsets::default();
 
-        let datamodel = offsets.get_datamodel();
+/*         let datamodel = offsets.get_datamodel();
         let players = offsets.find_first_child(datamodel, "Players");
         let localplayer = offsets.get_localplayer(players);
 
@@ -91,40 +83,11 @@ fn main(_hinst: usize) {
         let cool = offsets.getscreendim();
         println!("{} {}", cool.x, cool.y);
 
-        /*       let cool = offsets.world2screen(Vector3 { x: 1.1, y: 2.2, z: 3.3 });
+        let v1 = Vector2 { x: 1.0, y: 2.0 };
+        let v2 = Vector2 { x: 4.0, y: 5.0 };
+        let distance = v1.distance(&v2);
+        println!("{:.2}", distance); */
 
-       println!("{} {}",cool.x,cool.y);
-        */
-        // offsets.roblox_print("Test");
-
-        /*        let datamodel = offsets.get_datamodel();
-
-      let render = offsets.get_job("Render");
-      let viewmatrix = offsets.get_viewmatrix();
-      println!("{:?}",viewmatrix);
-      offsets.roblox_print(format!("Render: {:x}",render).as_str());
-      // println!("Datamodel: {:x} ",datamodel);
-      // offsets.roblox_print(format!("Datamodel: {:x} ",datamodel).as_str());
-      let Workspace = offsets.find_first_child(datamodel,"Workspace");
-
-      let Cool = offsets.find_first_child(Workspace, "Cool");
-      let Prox = offsets.find_first_child(Cool, "ProximityPrompt");
-
-      offsets.fireproxi(Prox);
-      // offsets.roblox_print(format!("Workspace {:x}",datamodel).as_str());
-      for i in offsets.get_children(Cool) {
-        let instancename = offsets.get_name(i);
-        let parent = offsets.get_parent(i);
-        let parentname = offsets.get_name(parent);
-        let classname = offsets.get_classname(i);
-        offsets.roblox_print(format!("Name: {} | Parent: {} | ClassName: {} | address: {:x}",instancename,parentname,classname,i).as_str());
-      }
-       */
-
-        /*       bruteforce::GetCharacterOffset();
-      bruteforce::GetLocalPlayerOffset();
-      bruteforce::GetUserIDOffset(); */
-        // bruteforce::GetPlaceIDOffset();
         gay::main_thread(_hinst);
     }
 }
