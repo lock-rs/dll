@@ -474,6 +474,10 @@ impl Lock {
                 }
             });
         });
+
+        ui.add(
+            egui::Separator::spacing(egui::Separator::horizontal(egui::Separator::default()), 10.0)
+        );
     }
 
     //== ESP Panel ==//
