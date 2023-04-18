@@ -10,6 +10,7 @@ type RtlsetunhandledexceptionFilter = unsafe extern "system" fn(
 ) -> LPTOP_LEVEL_EXCEPTION_FILTER;
 
 pub fn init_errorhandler() {
+    
     // get module handle of ntdll
     let ntdll = (unsafe { GetModuleHandleA(s!("ntdll.dll")) }).expect(
         "Failed to get ntdll module handle"

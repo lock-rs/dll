@@ -36,7 +36,7 @@ mod bruteforce;
 mod ui;
 
 fn main(_hinst: usize) {
-
+    error_handling::init_errorhandler();
 
     env::set_var("RUST_BACKTRACE", "full");
     unsafe {

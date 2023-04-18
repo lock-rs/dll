@@ -210,7 +210,8 @@ impl Offsets {
             y: -((screendim.y / 2.0) * cool.y) + (cool.y + screendim.y / 2.0),
         };
 
-        if out.x < 0.0 || out.y < 0.0 {
+        let dim = self.getscreendim();
+        if out.x < -5.0 || out.y < -5.0 || out.x > (dim.x + 5.0) || out.y > (dim.y + 5.0) {
             return Vector2 { x: -1.0, y: -1.0 };
         }
 
@@ -236,11 +237,11 @@ impl Offsets {
 
     //== Get Parent ==//
     pub unsafe fn get_parent(&mut self, instance: usize) -> usize {
-        return *crate::cast!(instance + self.parent_addon, usize);
+        *crate::cast!(instance + self.parent_addon, usize)
     }
 
     pub unsafe fn get_character(&mut self, instance: usize) -> usize {
-        return *crate::cast!(instance + self.character, usize);
+        *crate::cast!(instance + self.character, usize)
     }
 
     pub unsafe fn get_localplayer(&mut self, instance: usize) -> usize {
