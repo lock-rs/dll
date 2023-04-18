@@ -22,15 +22,16 @@ use offset_struct::Offsets;
 } */
 
 pub static mut OFFSETS: Offsets = Offsets::default();
-
+#[derive(Debug)]
 pub struct Addresses {
     datamodel: usize,
     players: usize,
     localplayer: usize,
+    visualengine: usize
 }
 
-pub static mut ADDRESSES: Addresses = Addresses { datamodel: 0, players: 0, localplayer: 0 };
-
+pub static mut ADDRESSES: Addresses = Addresses { datamodel: 0, players: 0, localplayer: 0, visualengine: 0};
+use crate::structs::rbxfunctions;
 mod dx11_hook;
 mod bruteforce;
 mod ui;
@@ -44,15 +45,30 @@ fn main(_hinst: usize) {
         let datamodel = OFFSETS.get_datamodel();
         let players = OFFSETS.find_first_child(datamodel, "Players");
         let localplayer = OFFSETS.get_localplayer(players);
+        let visualengine = OFFSETS.getvisualengine();
 
         ADDRESSES = Addresses {
           datamodel: datamodel,
           players: players,
           localplayer: localplayer,
+          visualengine: visualengine,
         };
-    }
 
-    error_handling::init_errorhandler();
+        
+        println!("{:X} {:X} {:X}",ADDRESSES.datamodel,ADDRESSES.players,ADDRESSES.localplayer);
+        println!("Hello?=");
+        let coooool = OFFSETS.get_functions(ADDRESSES.datamodel);
+        println!("{:?}",coooool);
+
+/*             println!("{:X}",coooool);
+
+            let mut cool = rbxfunctions {
+                address: coooool
+            };
+
+            println!("{}",cool.GetName());
+         */
+    }
     
     dx11_hook::main_thread(_hinst);
 }

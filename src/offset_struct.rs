@@ -4,6 +4,8 @@ use crate::cxx::CxxString;
 use crate::structs::Vector2;
 use crate::structs::Vector3;
 use crate::structs::Vector4;
+use crate::ADDRESSES;
+use crate::structs::rbxfunctions;
 
 // Rebase adress to roblox
 fn rebase_adress(adress: usize) -> usize {
@@ -166,7 +168,7 @@ impl Offsets {
     }
 
     pub unsafe fn get_viewmatrix(&mut self) -> Matrix4f32 {
-        let position = crate::cast!(self.getvisualengine() + self.viewmatrix, Matrix4f32);
+        let position = crate::cast!(ADDRESSES.visualengine + self.viewmatrix, Matrix4f32);
 
         *position
     }
@@ -193,27 +195,25 @@ impl Offsets {
             view_matrix[15],
         };
 
-        let screendim = self.getscreendim();
+        let dim = self.getscreendim();
 
         if clip_coords.w < 0.1 {
             return Vector2 { x: -1.0, y: -1.0 }; // Off screen.
         }
 
-        let cool = Vector3 {
+        let cool = Vector2 {
             x: clip_coords.x / clip_coords.w,
             y: clip_coords.y / clip_coords.w,
-            z: clip_coords.z / clip_coords.w,
         };
 
         let out = Vector2 {
-            x: (screendim.x / 2.0) * cool.x + (cool.x + screendim.x / 2.0),
-            y: -((screendim.y / 2.0) * cool.y) + (cool.y + screendim.y / 2.0),
+            x: (dim.x / 2.0) * cool.x + (cool.x + dim.x / 2.0),
+            y: -((dim.y / 2.0) * cool.y) + (cool.y + dim.y / 2.0),
         };
 
-        let dim = self.getscreendim();
-        if out.x < -5.0 || out.y < -5.0 || out.x > (dim.x + 5.0) || out.y > (dim.y + 5.0) {
+/*         if out.x < -5.0 || out.y < -5.0 || out.x > (dim.x + 5.0) || out.y > (dim.y + 5.0) {
             return Vector2 { x: -1.0, y: -1.0 };
-        }
+        } */
 
         return out;
     }
@@ -245,7 +245,7 @@ impl Offsets {
     }
 
     pub unsafe fn get_localplayer(&mut self, instance: usize) -> usize {
-        *crate::cast!(instance + self.character, usize)
+        *crate::cast!(instance + 0x140, usize)
     }
 
     //== Get Name ==//
@@ -266,6 +266,10 @@ impl Offsets {
         name.to_str().unwrap().to_string()
     }
 
+    pub unsafe fn get_classdefine(&mut self, instance: usize) -> usize {
+        *crate::cast!(instance + self.def_start, usize)
+    }
+
     //== Find First Child ==//
     pub unsafe fn find_first_child(&mut self, instance: usize, child_name: &str) -> usize {
         let mut return_value: usize = 0;
@@ -284,7 +288,7 @@ impl Offsets {
         let return_value: usize = 0;
 
         for i in self.get_children(instance) {
-            if self.get_name(i).to_string().as_str() == child_name {
+            if self.get_classname(i).to_string().as_str() == child_name {
                 return i;
             }
         }
@@ -296,7 +300,7 @@ impl Offsets {
     pub unsafe fn get_children(&mut self, instance: usize) -> Vec<usize> {
         let mut children = Vec::new();
 
-        if instance == (0 as usize) {
+        if instance == (0) {
             return children;
         }
 
@@ -306,10 +310,8 @@ impl Offsets {
         let mut child = *crate::cast!(start, usize);
         // Loop through children
         while child < end {
-            if !(self.get_name(*crate::cast!(child, usize)).chars().count() == 0) {
-                children.push(*crate::cast!(child, usize));
-            }
-
+            children.push(*crate::cast!(child, usize));
+            
             child += 0x8;
         }
 
@@ -330,9 +332,7 @@ impl Offsets {
         let mut child = *crate::cast!(start, usize) + 0x8;
         // Loop through children
         while child < end {
-            if !(self.get_name(*crate::cast!(child, usize)).chars().count() == 0) {
-                children.push(*crate::cast!(child, usize));
-            }
+            children.push(*crate::cast!(child, usize));
 
             child += 0x8;
         }
@@ -340,6 +340,27 @@ impl Offsets {
         children
     }
 
+
+    pub unsafe fn get_functions(&mut self,instance: usize) -> Vec<usize> {
+        let mut children = Vec::new();
+
+        let class_defin = self.get_classdefine(instance);
+
+        let mut start = *crate::cast!(class_defin + 0xD8, usize);
+        let end = *crate::cast!(start + 0x4, usize);
+
+        // Loop through children
+        while start < end {
+            let currentfunc = *crate::cast!(start, usize);
+            if currentfunc != 0 {
+                children.push(currentfunc);
+            }
+
+            start += 0x8;
+        }
+
+        children
+    }
     //== Roblox Print ==//
     pub unsafe fn roblox_print(&mut self, text: &str) {
         let var = text.replace(|c: char| !c.is_ascii(), "");

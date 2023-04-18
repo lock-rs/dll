@@ -918,7 +918,7 @@ impl Lock {
         unsafe {
 
             if *self.bool_map.entry("esp_enabled".to_owned()).or_insert(false as bool) {
-                for player in OFFSETS.get_every_other_player(ADDRESSES.players) {
+                for player in OFFSETS.get_every_other_player(ADDRESSES.players).into_iter() {
 
                     if player == 0 {
                         continue;

@@ -102,18 +102,19 @@ fn hk_resize_buffers(
     new_format: DXGI_FORMAT,
     swap_chain_flags: u32
 ) -> HRESULT {
-    eprintln!("Resizing buffers");
     unsafe {
-        APP.resize_buffers(&swap_chain, || {
-            ResizeBufferHook.call(
-                swap_chain.clone(),
-                buffer_count,
-                width,
-                height,
-                new_format,
-                swap_chain_flags
-            )
-        })
+
+       APP.resize_buffers(&swap_chain, || {
+           ResizeBufferHook.call(
+               swap_chain.clone(),
+               buffer_count,
+               width,
+               height,
+               new_format,
+               swap_chain_flags
+           )
+       })
+        
     }
 }
 
@@ -1233,23 +1234,27 @@ static mut FRAME: i32 = 0;
     }
 } */
 
+use std::thread;
+
 pub fn main_thread(_hinst: usize) {
-    unsafe {
-        eprintln!("Hello World!");
+    thread::spawn(|| {
+        unsafe {
+            eprintln!("Hello World!");
 
-        let methods = directx11::methods().unwrap();
+            let methods = directx11::methods().unwrap();
 
-        let present = methods.swapchain_vmt()[8];
-        eprintln!("Present: {:X}", present as usize);
+            let present = methods.swapchain_vmt()[8];
+            eprintln!("Present: {:X}", present as usize);
 
-        let swap_buffers = methods.swapchain_vmt()[13];
-        eprintln!("Buffers: {:X}", swap_buffers as usize);
+            let swap_buffers = methods.swapchain_vmt()[13];
+            eprintln!("Buffers: {:X}", swap_buffers as usize);
 
-        let present: FnPresent = std::mem::transmute(methods.swapchain_vmt()[8]);
-        let swap_buffers: FnResizeBuffers = std::mem::transmute(methods.swapchain_vmt()[13]);
+            let present: FnPresent = std::mem::transmute(methods.swapchain_vmt()[8]);
+            let swap_buffers: FnResizeBuffers = std::mem::transmute(methods.swapchain_vmt()[13]);
 
-        PresentHook.initialize(present, hk_present).unwrap().enable().unwrap();
+            PresentHook.initialize(present, hk_present).unwrap().enable().unwrap();
 
-        ResizeBufferHook.initialize(swap_buffers, hk_resize_buffers).unwrap().enable().unwrap();
-    }
+            ResizeBufferHook.initialize(swap_buffers, hk_resize_buffers).unwrap().enable().unwrap();
+        }
+    });
 }

@@ -34,3 +34,21 @@ pub struct Vector4 {
     pub z: f32,
     pub w: f32,
 }
+
+
+use cxx::CxxString;
+pub struct rbxfunctions {
+    pub address: usize
+}
+
+impl rbxfunctions {
+    pub unsafe fn GetName(&mut self) -> String {
+        let name_location = *&*crate::cast!(
+            *crate::cast!(self.address + 0x4, usize),
+            usize
+        ) as *const usize;
+        let name = &*crate::cast!(name_location, CxxString);
+        name.to_str().unwrap().to_string()
+    }
+    
+}
