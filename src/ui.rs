@@ -835,6 +835,7 @@ impl Lock {
 
     //== Misc Panel ==//
     fn draw_misc_panel(&mut self, ui: &mut Ui) {
+
         ui.horizontal(|ui| {
             ui.add(toggle(&mut self.unlock_fps)).on_hover_cursor(egui::CursorIcon::PointingHand);
             ui.label(egui::RichText::new("Unlock FPS").strong());

@@ -72,3 +72,4 @@ target = "nightly-i686-pc-windows-msvc"
 [package.metadata.commands]
 dev = "rustup run nightly-i686-pc-windows-msvc cargo build"
 release = "rustup run nightly-i686-pc-windows-msvc cargo build --release"
+udeps = "rustup run nightly-i686-pc-windows-msvc cargo udeps"

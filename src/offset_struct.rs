@@ -341,22 +341,23 @@ impl Offsets {
     }
 
 
-    pub unsafe fn get_functions(&mut self,instance: usize) -> Vec<usize> {
+    pub unsafe fn get_functions(&mut self,instance: usize) -> Vec<rbxfunctions> {
         let mut children = Vec::new();
 
         let class_defin = self.get_classdefine(instance);
 
         let mut start = *crate::cast!(class_defin + 0xD8, usize);
-        let end = *crate::cast!(start + 0x4, usize);
+        let end = *crate::cast!(class_defin + 0xD8 + 0x4, usize);
 
-        // Loop through children
         while start < end {
-            let currentfunc = *crate::cast!(start, usize);
-            if currentfunc != 0 {
-                children.push(currentfunc);
-            }
+            let tmp1 = *crate::cast!(start, usize);
+            let tmp = rbxfunctions {
+                address: tmp1,
+            };
+            
+            children.push(tmp);
 
-            start += 0x8;
+            start += 0x4;
         }
 
         children

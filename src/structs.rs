@@ -37,18 +37,24 @@ pub struct Vector4 {
 
 
 use cxx::CxxString;
+
+#[derive(Copy)]
+#[derive(Clone)]
+
 pub struct rbxfunctions {
     pub address: usize
 }
 
 impl rbxfunctions {
-    pub unsafe fn GetName(&mut self) -> String {
-        let name_location = *&*crate::cast!(
-            *crate::cast!(self.address + 0x4, usize),
-            usize
-        ) as *const usize;
-        let name = &*crate::cast!(name_location, CxxString);
+    pub unsafe fn GetName(self) -> String {
+        let name_location = self.address + 0x4;
+        let defre_name_location = *(name_location as *const usize) as *const usize;
+        let name = &*crate::cast!(defre_name_location, CxxString);
         name.to_str().unwrap().to_string()
+    }
+
+    pub unsafe fn GetFunc(self) -> usize {
+        *crate::cast!(self.address + 0x40, usize)
     }
     
 }

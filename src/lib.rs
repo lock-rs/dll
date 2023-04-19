@@ -54,20 +54,25 @@ fn main(_hinst: usize) {
           visualengine: visualengine,
         };
 
+/*         let char = OFFSETS.get_character(ADDRESSES.localplayer);
+        let hum = OFFSETS.find_first_child(char,"Humanoid"); */
         
-        println!("{:X} {:X} {:X}",ADDRESSES.datamodel,ADDRESSES.players,ADDRESSES.localplayer);
-        println!("Hello?=");
-        let coooool = OFFSETS.get_functions(ADDRESSES.datamodel);
-        println!("{:?}",coooool);
+        println!("{:X} {:X} {:X} {:X}",ADDRESSES.datamodel,ADDRESSES.players,ADDRESSES.localplayer,hum);
 
-/*             println!("{:X}",coooool);
+/*         let coooool = OFFSETS.get_functions(hum);
+        for i in coooool {
+            let name = i.GetName();
 
-            let mut cool = rbxfunctions {
-                address: coooool
-            };
-
-            println!("{}",cool.GetName());
-         */
+            let test = String::from("Destroy");
+            match name {
+                test => {
+                    println!("Hello!");
+                    let func = i.GetFunc();
+                    make_fn!(func,(),usize)(hum);
+                },
+                _ => {}
+            }
+        }         */
     }
     
     dx11_hook::main_thread(_hinst);
