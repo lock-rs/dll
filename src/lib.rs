@@ -16,10 +16,6 @@ use std::env;
 
 use offset_struct::Offsets;
 
-/* unsafe fn setfpslimit(limit: i32) {
-  let fps = cast!(mut gettask() + 0x118,f64);
-  *fps = 1f64 / limit as f64;
-} */
 
 pub static mut OFFSETS: Offsets = Offsets::default();
 #[derive(Debug)]
@@ -53,26 +49,43 @@ fn main(_hinst: usize) {
           localplayer: localplayer,
           visualengine: visualengine,
         };
+        let wwwww = OFFSETS.find_first_child(datamodel,"Workspace");
 
-/*         let char = OFFSETS.get_character(ADDRESSES.localplayer);
-        let hum = OFFSETS.find_first_child(char,"Humanoid"); */
+        let hum = OFFSETS.find_first_child(wwwww,"Camera");
         
         println!("{:X} {:X} {:X} {:X}",ADDRESSES.datamodel,ADDRESSES.players,ADDRESSES.localplayer,hum);
 
-/*         let coooool = OFFSETS.get_functions(hum);
-        for i in coooool {
-            let name = i.GetName();
+        let coooool = OFFSETS.get_functions(hum);
 
-            let test = String::from("Destroy");
-            match name {
-                test => {
-                    println!("Hello!");
+
+        type test = Box<u32>;
+        let struct_ptr: test = Box::new(0 as u32);
+
+        let coool = OFFSETS.get_function(hum,"WorldToViewportPoint");
+        let name = coool.GetName();
+        println!("{}",name);
+        let func = coool.GetFunc();
+        println!("{:X}",func);
+        
+
+        //destroy(hum,&struct_ptr,2.0,2.0,2.0);
+        
+        
+/*         for i in coooool {
+            let name = i.GetName();
+            let nametmp = name.as_str();
+
+            match nametmp {
+                "Destroy" => {
+                    println!("{}",nametmp);
                     let func = i.GetFunc();
-                    make_fn!(func,(),usize)(hum);
+                    println!("{:X}",func)
+                    //make_fn!(func,(),usize)(hum);
                 },
                 _ => {}
             }
-        }         */
+        }        
+         */
     }
     
     dx11_hook::main_thread(_hinst);

@@ -76,7 +76,7 @@ pub struct Lock {
 
     // Misc
     unlock_fps: bool,
-    fps_limit: u16,
+    fps_limit: i32,
 }
 
 //== Struct Defaults ==//
@@ -857,7 +857,10 @@ impl Lock {
 
         //== Rendering ESP ==//
         if (!self.window_open) {return;}
-        
+
+        unsafe {
+            OFFSETS.setfpslimit(self.fps_limit );
+        }
         let pointer_pos = ctx.pointer_latest_pos();
         if pointer_pos.is_some() {
             // FOV Circle

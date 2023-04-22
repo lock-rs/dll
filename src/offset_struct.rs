@@ -8,10 +8,14 @@ use crate::ADDRESSES;
 use crate::structs::rbxfunctions;
 
 // Rebase adress to roblox
-fn rebase_adress(adress: usize) -> usize {
+/* fn rebase_adress(adress: usize) -> usize {
     adress -
         0x00400000 +
         Module::from_module_name("RobloxPlayerBeta.exe").unwrap().module_base_address
+} */
+
+fn rebase_adress(adress: usize) -> usize {
+    Module::from_module_name("RobloxPlayerBeta.exe").unwrap().module_base_address + adress 
 }
 
 pub type Matrix4f32 = [f32; 16];
@@ -77,8 +81,8 @@ impl const Default for Offsets {
             position: 0xfc,
 
             // Other
-            roblox_printaddy: 0x10e1c00,
-            task_scheduler: 0xb26840,
+            roblox_printaddy: 0xCEE9C0,
+            task_scheduler: 0x7320B0,
 
             // Viewmatrix
             viewmatrix: 0x170,
@@ -361,6 +365,26 @@ impl Offsets {
         }
 
         children
+    }
+
+    //== Get Roblox Function ==//
+    pub unsafe fn get_function(&mut self, instance: usize, child_name: &str) -> rbxfunctions {
+        let mut return_value: rbxfunctions = rbxfunctions {
+            address: 0,
+        };
+
+        for i in self.get_functions(instance) {
+            if (i.GetName()).to_string().as_str() == child_name {
+                return_value = i;
+            }
+        }
+
+        return_value
+    }
+
+    pub unsafe fn setfpslimit(&mut self,limit: i32 ) {
+        let fps = crate::cast!(mut self.get_task() + 0x118,f64);
+        *fps = 1.0 / limit as f64;
     }
     //== Roblox Print ==//
     pub unsafe fn roblox_print(&mut self, text: &str) {
