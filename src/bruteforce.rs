@@ -37,35 +37,3 @@ pub unsafe fn get_localplayer_offset() -> usize {
 
     off
 }
-
-pub unsafe fn get_user_id_offset() -> usize {
-    let datamodel = OFFSETS.get_datamodel();
-    let players = OFFSETS.find_first_child(datamodel,"Players");
-    let localplayer = OFFSETS.get_children(players)[0];
-    
-    // Loop through jobs
-    let mut off = 0x0 as usize;
-    while *crate::cast!(localplayer + off, u32) != 577625010 { 
-        off += 4;
-    } 
-
-    OFFSETS.roblox_print(format!("Players UserID Offset {:x}",off).as_str());
-
-    off
-}
-
-
-// https://www.roblox.com/games/12109643/Fencing
-pub unsafe fn get_place_id_offset() -> usize {
-    let datamodel = OFFSETS.get_datamodel();
-    
-    // Loop through jobs
-    let mut off = 0x0 as usize;
-    while *crate::cast!(datamodel + off, i32) != 12109643 { 
-        off += 4;
-    } 
-
-    OFFSETS.roblox_print(format!("Players PlaceID Offset {:x}",off).as_str());
-
-    off
-}
