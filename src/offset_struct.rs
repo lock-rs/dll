@@ -368,7 +368,7 @@ impl Offsets {
     }
 
     //== Get Roblox Function ==//
-    pub unsafe fn get_function(&mut self, instance: usize, child_name: &str) -> rbxfunctions {
+    pub unsafe fn get_function(&mut self, instance: usize, child_name: &str) -> rbxfunctions { // credits to https://github.com/ElCapor/bloxlib
         let mut return_value: rbxfunctions = rbxfunctions {
             address: 0,
         };

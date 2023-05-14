@@ -8,6 +8,8 @@ mod structs;
 mod offset_struct;
 mod error_handling;
 mod vars;
+mod macros;
+
 //== Use ==//
 use std::{ ffi::{ CString, CStr, c_char } };
 use chiter::make_fn;
@@ -49,43 +51,21 @@ fn main(_hinst: usize) {
           localplayer: localplayer,
           visualengine: visualengine,
         };
-        let wwwww = OFFSETS.find_first_child(datamodel,"Workspace");
 
-        let hum = OFFSETS.find_first_child(wwwww,"Camera");
+    /*
+        let character = OFFSETS.get_character(localplayer);
+        let hum = OFFSETS.find_first_child(character,"HumanoidRootPart");
         
-        println!("{:X} {:X} {:X} {:X}",ADDRESSES.datamodel,ADDRESSES.players,ADDRESSES.localplayer,hum);
-
         let coooool = OFFSETS.get_functions(hum);
-
-
-        type test = Box<u32>;
-        let struct_ptr: test = Box::new(0 as u32);
-
         let coool = OFFSETS.get_function(hum,"WorldToViewportPoint");
         let name = coool.GetName();
         println!("{}",name);
+
         let func = coool.GetFunc();
-        println!("{:X}",func);
-        
+        let destroy = macros::make_thiscall_fn!(func,(),usize);
 
-        //destroy(hum,&struct_ptr,2.0,2.0,2.0);
-        
-        
-/*         for i in coooool {
-            let name = i.GetName();
-            let nametmp = name.as_str();
-
-            match nametmp {
-                "Destroy" => {
-                    println!("{}",nametmp);
-                    let func = i.GetFunc();
-                    println!("{:X}",func)
-                    //make_fn!(func,(),usize)(hum);
-                },
-                _ => {}
-            }
-        }        
-         */
+        destroy(hum); 
+    */
     }
     
     dx11_hook::main_thread(_hinst);

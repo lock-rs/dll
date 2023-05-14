@@ -45,7 +45,7 @@ pub struct rbxfunctions {
     pub address: usize
 }
 
-impl rbxfunctions {
+impl rbxfunctions { // https://github.com/ElCapor/bloxlib/blob/main/BoundedFunc.py
     pub unsafe fn GetName(self) -> String {
         let name_location = self.address + 0x4;
         let defre_name_location = *(name_location as *const usize) as *const usize;
